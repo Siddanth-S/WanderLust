@@ -1,0 +1,217 @@
+<% layout('layouts/boilerplate') %>
+<body>
+  <style>
+    #filters {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .filter {
+      text-align: center;
+      margin-right: 2rem;
+      margin-top: 1.5rem;
+      opacity: 0.7;
+    }
+    .filter:hover {
+      opacity: 1;
+      cursor: pointer;
+    }
+    .filter {
+      font-size: 0.8rem;
+    }
+
+    .tax-info {
+      display: none;
+    }
+    .tax-toggle {
+      border: 1px solid black;
+      border-radius: 1rem;
+      height: 3.1rem;
+      padding: 1rem;
+      margin-left: 3rem;
+      display: flex;
+      align-items: center;
+    }
+    .btn-icon {
+      border: none;
+      background-color: white;
+    }
+  </style>
+  <div id="filters">
+    <form action="/listings" method="get">
+      <div class="filter">
+        <input type="hidden" name="filter" value="Trending" />
+        <div>
+          <button class="btn-icon"><i class="fa-solid fa-fire"></i></button>
+        </div>
+        <p>Trending</p>
+      </div>
+    </form>
+
+    <form action="/listings" method="get">
+      <div class="filter">
+        <input type="hidden" name="filter" value="Rooms" />
+        <div>
+          <button class="btn-icon"><i class="fa-solid fa-bed"></i></button>
+        </div>
+        <p>Rooms</p>
+      </div>
+    </form>
+
+    <form action="/listings" method="get">
+      <div class="filter">
+        <input type="hidden" name="filter" value="Iconic cities" />
+        <div>
+          <button class="btn-icon">
+            <i class="fa-solid fa-mountain-city"></i>
+          </button>
+        </div>
+        <p>Iconic cities</p>
+      </div>
+    </form>
+
+    <form action="/listings" method="get">
+      <div class="filter">
+        <input type="hidden" name="filter" value="Mountain" />
+        <div>
+          <button class="btn-icon"><i class="fa-solid fa-mountain"></i></button>
+        </div>
+        <p>Mountain</p>
+      </div>
+    </form>
+
+    <form action="/listings" method="get">
+      <div class="filter">
+        <input type="hidden" name="filter" value="Castles" />
+        <div>
+          <button class="btn-icon">
+            <i class="fa-solid fa-chess-rook"></i>
+          </button>
+        </div>
+        <p>Castles</p>
+      </div>
+    </form>
+
+    <form action="/listings" method="get">
+      <div class="filter">
+        <input type="hidden" name="filter" value="Pools" />
+        <div>
+          <button class="btn-icon">
+            <i class="fa-solid fa-person-swimming"></i>
+          </button>
+        </div>
+        <p>Pools</p>
+      </div>
+    </form>
+
+    <form action="/listings" method="get">
+      <div class="filter">
+        <input type="hidden" name="filter" value="Camping" />
+        <div>
+          <button class="btn-icon">
+            <i class="fa-solid fa-campground"></i>
+          </button>
+        </div>
+        <p>Camping</p>
+      </div>
+    </form>
+
+    <form action="/listings" method="get">
+      <div class="filter">
+        <input type="hidden" name="filter" value="Farms" />
+        <div>
+          <button class="btn-icon"><i class="fa-solid fa-cow"></i></button>
+        </div>
+        <p>Farms</p>
+      </div>
+    </form>
+
+    <form action="/listings" method="get">
+      <div class="filter">
+        <input type="hidden" name="filter" value="Arctic" />
+        <div>
+          <button class="btn-icon">
+            <i class="fa-solid fa-snowflake"></i>
+          </button>
+        </div>
+        <p>Arctic</p>
+      </div>
+    </form>
+
+    <form action="/listings" method="get">
+      <div class="filter">
+        <input type="hidden" name="filter" value="Dome" />
+        <div>
+          <button class="btn-icon"><i class="fa-solid fa-igloo"></i></button>
+        </div>
+        <p>Dome</p>
+      </div>
+    </form>
+
+    <form action="/listings" method="get">
+      <div class="filter">
+        <input type="hidden" name="filter" value="Boats" />
+        <div>
+          <button class="btn-icon"><i class="fa-solid fa-ship"></i></button>
+        </div>
+        <p>Boats</p>
+      </div>
+    </form>
+
+    <div class="tax-toggle">
+      <div class="form-check-reverse form-switch">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          role="switch"
+          id="switchCheckDefault"
+        />
+        <label class="form-check-label" for="switchCheckDefault"
+          >Display total after taxes</label
+        >
+      </div>
+    </div>
+  </div>
+
+  <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-3">
+    <% for (let listings of allListings) { %> <% if (!name || name.toLowerCase()
+    === listings.country.toLowerCase()) { %>
+    <a href="/listings/<%= listings.id %>" class="listing-link">
+      <div class="card col listing-card">
+        <img
+          src="<%= listings.image.url %>"
+          class="card-img-top"
+          alt="listing_img"
+          style="height: 20rem"
+        />
+        <div class="card-img-overlay"></div>
+        <div class="card-body">
+          <p class="card-text">
+            <b>
+              <%= listings.title %><br />
+              &#8377; <%= listings.price.toLocaleString("en-IN") %> / night
+            </b>
+            <%let gst=listings.price%>
+            <% gst_amt=((18/100)*gst)%>
+            <i class="tax-info">&nbsp;+&#8377;<%=gst_amt.toLocaleString("en-IN")%> GST</i>
+          </p>
+        </div>
+      </div>
+    </a>
+    <% } %> <% } %>
+  </div>
+</body>
+
+<script>
+  let taxswitch = document.getElementById("switchCheckDefault");
+  taxswitch.addEventListener("click", () => {
+    let taxinfo = document.getElementsByClassName("tax-info");
+    for (info of taxinfo) {
+      if (info.style.display != "inline") {
+        info.style.display = "inline";
+      } else {
+        info.style.display = "none";
+      }
+    }
+  });
+</script>

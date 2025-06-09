@@ -1,0 +1,94 @@
+<% layout("/layouts/boilerplate")%>
+
+<div class="row mt-3">
+  <h1 class="col-6 offset-3">SignUp on Wanderlust</h1>
+  <div class="col-6 offset-3">
+    <form action="/signup" method="POST" class="needs-validation" novalidate>
+      <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <input
+          name="username"
+          id="username"
+          placeholder="Enter Username"
+          type="text"
+          class="form-control"
+          required
+        />
+        <div class="valid-feedback">Looks good!</div>
+      </div>
+      <!-- Email Field + Send OTP Button -->
+      <div class="mb-3">
+        <label for="email">Email</label>
+        <div class="input-group input-group-sm">
+          <input
+            type="email"
+            class="form-control"
+            id="email"
+            name="email"
+            required
+            placeholder="Enter email"
+          />
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            id="sendOtpBtn"
+          >
+            Send OTP
+          </button>
+        </div>
+      </div>
+
+      <!-- OTP Input Field (Hidden by default) -->
+      <div class="mb-3" id="otpSection" style="display: none">
+        <label for="otp">Enter OTP</label>
+        <input type="text" class="form-control" id="otp" name="otp" required />
+      </div>
+
+      <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input
+          name="password"
+          id="password"
+          placeholder="Enter password"
+          type="password"
+          class="form-control"
+          required
+        />
+      </div>
+      <button class="btn btn-success">Signup</button>
+    </form>
+  </div>
+</div>
+
+<script>
+    document.getElementById("sendOtpBtn").addEventListener("click", async () => {
+      const email = document.getElementById("email").value;
+  
+      if (!email) {
+        alert("Please enter an email first.");
+        return;
+      }
+  
+      try {
+        const response = await fetch("/send-otp", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ email })
+        });
+  
+        const result = await response.json();
+  
+        if (result.success) {
+          alert("OTP sent to your email.");
+          document.getElementById("otpSection").style.display = "block";
+        } else {
+          alert(result.message || "Failed to send OTP.");
+        }
+      } catch (error) {
+        console.error(error);
+        alert("An error occurred while sending OTP.");
+      }
+    });
+  </script>

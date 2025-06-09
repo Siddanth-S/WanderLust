@@ -1,0 +1,100 @@
+<style>
+  .search-btn {
+    background-color: #fe424d;
+    color: #ffffff;
+    border-radius: 25px;
+    padding: 0 1rem 0 1rem;
+  }
+  .search-btn:hover {
+    background-color: #fe424d;
+    color: white;
+  }
+  .search-btn i {
+    display: inline;
+    margin-right: 0.5rem;
+  }
+  .search-input {
+    border-radius: 25px;
+    padding: 0.5rem 3rem 0.5rem 3rem;
+    text-align: center;
+  }
+  .profile-logo {
+    font-size: 1.35rem;
+    opacity: 0.85;
+  }
+  .profile-logo:hover {
+    opacity: 1;
+    cursor: pointer;
+  }
+  .profile-btn{
+    background-color: white;
+    border-radius: 50%;
+  }
+  .btn-login-signup{
+    color: #fe424d;
+    border-color: #fe424d;
+  }
+  .btn-login-login{
+    background-color: #fe424d;
+    border-color: #fe424d;
+  }
+</style>
+
+<nav class="navbar navbar-expand-md bg-body-ligh border-bottom sticky-top">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/listings"
+      ><i class="fa-regular fa-compass"></i
+    ></a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNavAltMarkup"
+      aria-controls="navbarNavAltMarkup"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+      <div class="navbar-nav">
+        <a class="nav-link" href="/listings">Explore</a>
+        <a class="nav-link" href="/listings/new">Host New Listing</a>
+      </div>
+
+      <div class="mx-auto">
+        <% if(typeof hideSearch==="undefined"||!hideSearch){%>
+        <form class="d-flex" action="/listings" method="get" role="search">
+          <input
+            class="form-control me-2 search-input"
+            type="search"
+            name="name"
+            autocomplete="off"
+            value="<%=typeof name !=='undefined'? name:''%>"
+            placeholder="Search destinations"
+          />
+          <button class="btn search-btn" type="submit">
+            <i class="fa-solid fa-magnifying-glass"></i>Search
+          </button>
+        </form>
+        <%}%>
+      </div>
+
+      <!-- <a class="nav-link" href="/listings/new">Host New Listing</a> -->
+
+      <%if(!curUser){%>
+      <a class="btn btn-outline-primary mx-1 btn-login-signup" href="/signup"
+        >SignUp</a
+      >
+      <a class="btn btn-primary mx-1 btn-login-login" href="/login">Log in</a>
+      <%}%> <%if(curUser){%>
+      <a class="btn btn-dark me-4" href="/logout">Log out</a>
+      <div class="profile-logo">
+        <form action="/listings/profile" method="get">
+          <button class="profile-btn"><i class="fa-regular fa-user"></i></button>
+        </form>
+      </div>
+      <%}%>
+    </div>
+  </div>
+</nav>

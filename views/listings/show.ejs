@@ -1,0 +1,225 @@
+<% layout("/layouts/boilerplate") -%>
+<div class="row">
+  <div class="col-8 offset-3 mt-3">
+    <h3><%=listing.title%></h3>
+  </div>
+
+  <div class="card col-6 offset-3 show-card listing-card">
+    <img
+      src="<%=listing.image.url%>"
+      class="card-img-top show-image"
+      alt="listing_img"
+    />
+    <div class="card-body">
+      <p class="card-text">
+        <i>Owned by:- <%=listing.owner.username%></i>
+      </p>
+      <p class="card-text"><%=listing.description%></p>
+      <p class="card-text">
+        Price:-  &#8377; <%=listing.price.toLocaleString("en-IN")%>
+      </p>
+      <p class="card-text">Location:- <%=listing.location%></p>
+      <p class="card-text">Country:- <%=listing.country%></p>
+    </div>
+  </div>
+  <% if(curUser && listing.owner._id.equals(curUser._id)){%>
+  <div class="btns">
+    <a
+      href="/listings/<%=listing._id%>/edit"
+      class="btn btn-dark col-1 offset-3 edit-btn"
+      >Edit</a
+    >
+    <form method="post" action="/listings/<%=listing._id%>?_method=delete">
+      <button class="btn btn-dark offset-5">Delete</button>
+    </form>
+  </div>
+
+  <%}%>
+
+  <!-- review -->
+
+  <div class="col-8 offset-3 mt-3">
+    <hr />
+    <% if(curUser){%>
+    <h4>Leave a Review</h4>
+    <form
+      class="mb-3 needs-validation"
+      action="/listings/<%=listing.id%>/reviews"
+      method="post"
+      novalidate
+    >
+      <div class="mb-3 mt-3">
+        <label for="rating" class="form-label">Rating</label>
+
+        <fieldset class="starability-slot">
+          <input
+            type="radio"
+            id="no-rate"
+            class="input-no-rate"
+            name="review[rating]"
+            value="1"
+            checked
+            aria-label="No rating."
+          />
+          <input
+            type="radio"
+            id="first-rate1"
+            name="review[rating]"
+            value="1"
+          />
+          <label for="first-rate1" title="Terrible">1 star</label>
+          <input
+            type="radio"
+            id="first-rate2"
+            name="review[rating]"
+            value="2"
+          />
+          <label for="first-rate2" title="Not good">2 stars</label>
+          <input
+            type="radio"
+            id="first-rate3"
+            name="review[rating]"
+            value="3"
+          />
+          <label for="first-rate3" title="Average">3 stars</label>
+          <input
+            type="radio"
+            id="first-rate4"
+            name="review[rating]"
+            value="4"
+          />
+          <label for="first-rate4" title="Very good">4 stars</label>
+          <input
+            type="radio"
+            id="first-rate5"
+            name="review[rating]"
+            value="5"
+          />
+          <label for="first-rate5" title="Amazing">5 stars</label>
+        </fieldset>
+      </div>
+      <div class="mb-3 mt-3">
+        <label for="comment" class="form-label">Comment</label>
+        <textarea
+          class="form-control"
+          name="review[comment]"
+          id="comment"
+          cols="30"
+          rows="5"
+          required
+        ></textarea>
+        <div class="invalid-feedback">Please add some comments for review</div>
+      </div>
+      <button class="btn btn-outline-dark">Submit</button>
+    </form>
+    <hr />
+    <%}%> <%if(listing.reviews.length>0){%>
+    <div class="row">
+      <p><b>All Reviews</b></p>
+      <% for(review of listing.reviews ){%>
+      <div class="card col-5 ms-3 mb-3">
+        <div class="card-body">
+          <h5 class="card-title">@<%= review.author.username%></h5>
+          <p
+            class="starability-result card-text"
+            data-rating="<%=review.rating%>"
+          ></p>
+          <p class="card-text"><%=review.comment%></p>
+          <% if (curUser && review.author._id.equals(curUser._id)) { %>
+            <form
+              class="mb-3"
+              method="POST"
+              action="/listings/<%=listing._id%>/reviews/<%=review._id%>?_method=DELETE"
+            >
+              <button class="btn btn-dark mb-3">Delete</button>
+            </form>
+          <% } %>
+        </div>
+      </div>
+      <%}%>
+    </div>
+    <%}%>
+  </div>
+  <!-- Google Map Section -->
+  <div class="col-10 offset-3 mt-3 mb-3">
+    <h4>Location on Map</h4>
+    <div
+      id="map"
+      style="height: 400px; width: 650px; border: 1px solid #ccc"
+    ></div>
+  </div>
+</div>
+<script>
+  function initMap() {
+    const geocoder = new google.maps.Geocoder();
+    const address = "<%= listing.location %>, <%= listing.country %>";
+
+    geocoder.geocode({ address: address }, (results, status) => {
+      if (status === "OK") {
+        const location = results[0].geometry.location;
+
+        const map = new google.maps.Map(document.getElementById("map"), {
+          zoom: 13,
+          center: location,
+        });
+
+        const marker = new google.maps.Marker({
+          map: map,
+          position: location,
+          title: "<%= listing.title %>",
+        });
+        const circle = new google.maps.Circle({
+          strokeColor: "#FF385C",
+          strokeOpacity: 0.5,
+          strokeWeight: 1,
+          fillColor: "#FF385C",
+          fillOpacity: 0.2,
+          map: map,
+          center: location,
+          radius: 1000, // 1 km
+        });
+        // Create the popup info window with location + message
+        const infoWindow = new google.maps.InfoWindow({
+          content: `
+            <div style="font-family: Arial, sans-serif;">
+              <div style="font-weight: 600; font-size: 14px;">
+                <%= listing.location %>, <%= listing.country %>
+              </div>
+              <div style="font-size: 12px; margin-top: 2px;">
+                Exact location provided after booking
+              </div>
+            </div>
+          `,
+        });
+
+        // Show info window on marker hover
+        marker.addListener("mouseover", () => {
+          infoWindow.open(map, marker);
+        });
+        marker.addListener("mouseout", () => {
+          infoWindow.close();
+        });
+      } else {
+        const fallback = { lat: 12.9716, lng: 77.5946 };
+        const map = new google.maps.Map(document.getElementById("map"), {
+          zoom: 10,
+          center: fallback,
+        });
+      }
+    });
+
+    // Initialize Places Autocomplete (if locationInput exists)
+    const input = document.getElementById("locationInput");
+    if (input) {
+      const autocomplete = new google.maps.places.Autocomplete(input);
+      autocomplete.setFields(["formatted_address", "geometry"]);
+    }
+  }
+</script>
+
+<!-- Load Google Maps JavaScript API -->
+<script
+  async
+  defer
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD9otG1N8rLYObuFd-KXxWFRjj42UL3ubw&libraries=places&callback=initMap"
+></script>
