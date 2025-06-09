@@ -109,6 +109,6 @@ app.use((err, req, res, next) => {
   res.status(statuscode).render("errors.ejs", { err });
 });
 
-app.listen(8000, () => {
+app.listen( process.env.PORT || 8000, () => {
   console.log("server is listernis on port 800");
 });
